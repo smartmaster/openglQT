@@ -596,7 +596,7 @@ void MyOglWidget::on_timeout()
     if(!_axisInited)
     {
         _axisModel.SetOrigin(glm::vec3(0.0f, 0.0f, SML_SCALE(DISTANCE_POINT)));
-        _offsetZ = SML_SCALE(DISTANCE_POINT);
+        //_offsetZ = SML_SCALE(DISTANCE_POINT);
         _axisInited = true;
     }
     static constexpr float angle_delta = 1.0f;
