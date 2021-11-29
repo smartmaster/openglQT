@@ -28,7 +28,8 @@ MyOglWidget::MyOglWidget(QWidget *parent)
 
     /////////////////////////////////////////////////////////////////
     _updateTimer = new QTimer{this};
-    _updateTimer->setInterval(15); //15ms
+    const int millSec = 16;//16 ms, about 60 fps per second
+    _updateTimer->setInterval(millSec);
     connect(_updateTimer, &QTimer::timeout, this, &MyOglWidget::on_timeout);
 
 
@@ -187,12 +188,15 @@ inline static constexpr float _logicalHeight = 2.0f * _logicalUnit;
 
 
 /////////////////////////////////////////////////////////////////
+static constexpr float DISTANCE_TRIANGLE = -6.0f;
+static constexpr float DISTANCE_POINT = -4.5f;
+
 static GLfloat oglpos[] =
 {
-    SML_SCALE(1.0f),    SML_SCALE(-1.0f),   SML_SCALE(-6.0f), 1.0f,
-    SML_SCALE(0.0f),    SML_SCALE(1.0f),    SML_SCALE(-6.0f), 1.0f,
-    SML_SCALE(-1.0f),   SML_SCALE(-1.0f),   SML_SCALE(-6.0f), 1.0f,
-    SML_SCALE(0.0f),    SML_SCALE(0.0f),    SML_SCALE(-4.5f), 1.0f,
+    SML_SCALE(1.0f),    SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+    SML_SCALE(0.0f),    SML_SCALE(1.0f),    SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+    SML_SCALE(-1.0f),   SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+    SML_SCALE(0.0f),    SML_SCALE(0.0f),    SML_SCALE(DISTANCE_POINT), 1.0f,
 };
 
 static GLfloat oglcolor[] =
@@ -220,7 +224,7 @@ static GLfloat oglLinepos[] =
     SML_SCALE(0.0),    SML_SCALE(10.0f),   SML_SCALE(0.0f), 1.0f,
 
     SML_SCALE(0.0),    SML_SCALE(0.0f),   SML_SCALE(-10.0f), 1.0f,
-    SML_SCALE(0.0),    SML_SCALE(0.0f),   SML_SCALE(100.0f), 1.0f,
+    SML_SCALE(0.0),    SML_SCALE(0.0f),   SML_SCALE(10.0f), 1.0f,
     
 };
 
@@ -346,30 +350,23 @@ void MyOglWidget::paintGL()
 
 
     /////////////////////////////////////////////////////////////////
-    auto aixsRot = glm::vec3(0.0f, 0.0f, 1.0f);
-    float radians = glm::radians(_angle);
-
-    glm::mat4 modelT{1.0f};
+    //glm::mat4 modelT{1.0f};
     //    glm::mat4 modelT = glm::translate(glm::mat4(1.0f),
     //                                      glm::vec3(SML_SCALE(glm::sin(radians))*2.0f,
     //                                                SML_SCALE(glm::cos(radians))*2.0f,
     //                                                SML_SCALE(glm::sin(2*radians))*0.0f));
 
-
-    //glm::mat4  modelR{1.0f};
-    glm::mat4  modelR = glm::rotate(glm::mat4(1.0f), radians, aixsRot);
+    auto model = _axisModel.ModelToWorldMat();
 
 
-
-
-    glm::mat4 modelS{1.0f};
+    //glm::mat4 modelS{1.0f};
     //    glm::mat4 modelS = glm::scale(glm::mat4(1.0f),
     //            glm::vec3(glm::max(glm::cos(radians), 0.6f) ,
     //                      glm::max(glm::sin(radians), 0.6f) ,
     //                      glm::max(glm::cos(2*radians), 0.6f)));
 
 
-    glm::mat4  model = modelT * modelR * modelS;
+    //glm::mat4  model = modelT * modelR * modelS;
 
     glm::mat4 mvp = frustum * view * model;
 
@@ -595,13 +592,38 @@ void MyOglWidget::keyPressEvent(QKeyEvent *event)
 
 void MyOglWidget::on_timeout()
 {
-    static constexpr float delta{0.5f};
 
-    _angle += delta;
-    if(_angle >= 360.0f)
+    if(!_axisInited)
     {
-        _angle -= 360.0f;
+        _axisModel.SetOrigin(glm::vec3(0.0f, 0.0f, SML_SCALE(DISTANCE_POINT)));
+        _offsetZ = SML_SCALE(DISTANCE_POINT);
+        _axisInited = true;
     }
+    static constexpr float angle_delta = 1.0f;
+    float radians = glm::radians(angle_delta);
+    _axisModel.Rotate(radians, glm::vec3(1.0f, 0.0f, 0.0f))
+            .Rotate(radians, glm::vec3(0.0f, 1.0f, 0.0f))
+            .Rotate(radians, glm::vec3(0.0f, 0.0f, 1.0f));
+//    static constexpr float offset_delta = SML_SCALE(0.1f);
+//    if(_dirInc)
+//    {
+//        _offsetZ += offset_delta;
+//        _axisModel.Translate(glm::vec3(0.0f, 0.0f, offset_delta));
+//        if(_offsetZ >= -SML_SCALE(DISTANCE_TRIANGLE))
+//        {
+//            _dirInc = false;
+//        }
+//    }
+//    else
+//    {
+//        _offsetZ -= offset_delta;
+//        _axisModel.Translate(glm::vec3(0.0f, 0.0f, -offset_delta));
+//        if(_offsetZ <= SML_SCALE(DISTANCE_TRIANGLE))
+//        {
+//            _dirInc = true;
+//        }
+//    }
+
 
     if(this->isVisible() && !this->isHidden())
     {

@@ -5,6 +5,7 @@
 
 #include <glm/glm.hpp>
 
+#include "SMLAxisSystem.h"
 
 class QTimer;
 
@@ -68,15 +69,19 @@ private:
 
     QTimer* _updateTimer{nullptr};
 
-    float _angle{0.0f};
 
     glm::mat4 _eyeAxis{1.0f};
     glm::vec3 _eye{0.0f, 0.0f, 0.0f};
+    float _offsetZ{0.0f};
+    bool _dirInc{false};
+
+    bool _axisInited{false};
 
    inline static constexpr int posLocation = 0;
    inline static constexpr int colorLocation = 1;
 
 
+    SmartLib::AxisSystem<float> _axisModel;
 
 
 };

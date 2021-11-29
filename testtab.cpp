@@ -5,7 +5,10 @@
 #include <glm/gtc/epsilon.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <random>
+
 #include <string>
+#include <vector>
 #include <cassert>
 
 TestTab::TestTab(QWidget *parent) :
@@ -68,7 +71,7 @@ void TestTab::on_pushButtonTestAxisSystem_clicked()
     double up2 = -488.00;
 
 
-    
+
 
     auto matGlm = glm::ortho(left, right, bottom, top, near, far);
     auto matAS = AxisSystem<double>::Ortho(left, right, bottom, top, near, far);
@@ -82,14 +85,14 @@ void TestTab::on_pushButtonTestAxisSystem_clicked()
 
     ///////////////////////////////////////////////////
     auto matEyeGlm = glm::lookAt(glm::tvec3<double>{left, right, bottom},
-                          glm::tvec3<double>{top, near, far},
-                          glm::tvec3<double>{up0, up1, up2});
+                                 glm::tvec3<double>{top, near, far},
+                                 glm::tvec3<double>{up0, up1, up2});
 
 
     auto matEyeAS = AxisSystem<double>::LookAt(
-                        glm::tvec3<double>{left, right, bottom},
-                          glm::tvec3<double>{top, near, far},
-                          glm::tvec3<double>{up0, up1, up2});
+                glm::tvec3<double>{left, right, bottom},
+                glm::tvec3<double>{top, near, far},
+                glm::tvec3<double>{up0, up1, up2});
 
     for(int ii = 0; ii< 4; ++ ii)
     {
@@ -101,4 +104,403 @@ void TestTab::on_pushButtonTestAxisSystem_clicked()
 
 }
 
+
+static void FillRandom(float* buiffer, int count)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_int_distribution<int> dist(-999999, 999999);
+    int ii = 0;
+    while(ii < count)
+    {
+        int rn = dist(mt);
+        if(rn)
+        {
+            buiffer[ii] = float(rn)/(100000.0f);
+            ++ii;
+        }
+    }
+}
+
+void TestTab::on_pushButtonTestAll_clicked()
+{
+    using T = float;
+    float eps = glm::epsilon<float>()*1000;
+    std::vector<float> buffer(4096);
+    FillRandom(buffer.data(), (int)buffer.size());
+
+    int index = 0;
+    ////////////////////////////////////
+    {
+
+        auto m1 = SmartLib::AxisSystem<float>::Ortho(
+                    buffer[index+0],
+                buffer[index+1],
+                buffer[index+2],
+                buffer[index+3],
+                buffer[index+4],
+                buffer[index+5]);
+
+        auto m2 = glm::ortho(
+                    buffer[index+0],
+                buffer[index+1],
+                buffer[index+2],
+                buffer[index+3],
+                buffer[index+4],
+                buffer[index+5]);
+
+        index += 6;
+
+        for(int ii = 0; ii < 3; ++ ii)
+        {
+            auto iseq = glm::epsilonEqual(m1[ii], m2[ii], eps);
+            auto ok = glm::all(iseq);
+            assert(ok);
+        }
+
+
+    }
+
+    ///////////////////////////////////////
+    {
+        glm::tvec3<T> eye{buffer[index+0],
+                    buffer[index+1],
+                    buffer[index+2]};
+        index += 3;
+
+        glm::tvec3<T> center{buffer[index+0],
+                    buffer[index+1],
+                    buffer[index+2]};
+        index += 3;
+
+        glm::tvec3<T> up{buffer[index+0],
+                    buffer[index+1],
+                    buffer[index+2]};
+        index += 3;
+
+        auto m1 = SmartLib::AxisSystem<float>::LookAt(eye, center, up);
+        auto m2 = glm::lookAt(eye, center, up);
+
+        for(int ii = 0; ii < 3; ++ ii)
+        {
+            auto iseq = glm::epsilonEqual(m1[ii], m2[ii], eps);
+            auto ok = glm::all(iseq);
+            assert(ok);
+        }
+    }
+
+
+    /////////////////////////////////
+    {
+        glm::tmat4x4<float> m4(
+                    buffer[index+0],
+                buffer[index+1],
+                buffer[index+2],
+                buffer[index+3],
+                buffer[index+4],
+                buffer[index+5],
+                buffer[index+6],
+                buffer[index+7],
+                buffer[index+8],
+                buffer[index+9],
+                buffer[index+10],
+                buffer[index+11],
+                buffer[index+12],
+                buffer[index+13],
+                buffer[index+14],
+                buffer[index+15]
+                );
+        index += 16;
+
+
+        glm::vec4 v4{buffer[index+0],
+                    buffer[index+1],
+                    buffer[index+2],
+                    buffer[index+3]};
+        index += 4;
+
+        {
+
+            auto vec =  SmartLib::AxisSystem<T>::Mat4xVec4(m4, v4);
+            std::string str = glm::to_string(vec);
+        }
+
+        glm::vec3 v3{buffer[index+0],
+                    buffer[index+1],
+                    buffer[index+2]};
+        index += 3;
+
+        {
+            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::Mat4xVec3V(m4, v3);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::Mat4xVec3(m4, v3);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec4<T> vec = SmartLib::AxisSystem<T>::V3ToV4V(v3);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec4<T> vec = SmartLib::AxisSystem<T>::V3ToV4(v3);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::V4ToV3(v4);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec3<T> originPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> horizontalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> verticalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> zV = glm::cross(horizontalV, verticalV);
+            verticalV = glm::cross(zV, horizontalV);
+            SmartLib::AxisSystem<T> as;
+
+            as.MakeFromOHVZ(originPos, horizontalV, verticalV, zV);
+
+            ///////////////////////
+            glm::vec3 model{ buffer[index + 0],
+                        buffer[index + 1],
+                        buffer[index + 2] };
+            index += 3;
+            auto world = as.ModelToWorld(model);
+            auto model1 = as.WorldToModel(world);
+            auto world1 = as.ModelToWorld(model1);
+            assert(glm::all(glm::epsilonEqual(model1, model, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world, eps)));
+
+            auto w2mmat = as.WorldToModelMat();
+            auto m2wmat = as.ModelToWorldMat();
+            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+
+            assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
+        }
+
+        {
+            glm::tvec3<T> originPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> horizontalPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> verticalPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            SmartLib::AxisSystem<T> as;
+            as.MakeFromOHVPos(originPos, horizontalPos, verticalPos);
+
+
+            ///////////////////////
+            glm::vec3 model{ buffer[index + 0],
+                        buffer[index + 1],
+                        buffer[index + 2] };
+            index += 3;
+            auto world = as.ModelToWorld(model);
+            auto model1 = as.WorldToModel(world);
+            auto world1 = as.ModelToWorld(model1);
+            assert(glm::all(glm::epsilonEqual(model1, model, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world, eps)));
+
+            auto w2mmat = as.WorldToModelMat();
+            auto m2wmat = as.ModelToWorldMat();
+            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+
+            assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
+
+        }
+
+        {
+            glm::tvec3<T> originPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> horizontalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> verticalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            SmartLib::AxisSystem<T> as;
+            as.MakeFromOHV(originPos, horizontalV, verticalV);
+
+            ///////////////////////
+            glm::vec3 model{ buffer[index + 0],
+                        buffer[index + 1],
+                        buffer[index + 2] };
+            index += 3;
+            auto world = as.ModelToWorld(model);
+            auto model1 = as.WorldToModel(world);
+            auto world1 = as.ModelToWorld(model1);
+            assert(glm::all(glm::epsilonEqual(model1, model, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world, eps)));
+
+            auto w2mmat = as.WorldToModelMat();
+            auto m2wmat = as.ModelToWorldMat();
+            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+
+            assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
+
+        }
+
+
+        {
+            glm::tvec3<T> originPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> horizontalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> verticalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            SmartLib::AxisSystem<T> as;
+            as.MakeFromOHV(originPos, horizontalV, verticalV);
+
+            ///////////////////////
+            glm::vec3 model{ buffer[index + 0],
+                        buffer[index + 1],
+                        buffer[index + 2] };
+            index += 3;
+            auto world = as.ModelToWorld(model);
+            auto model1 = as.WorldToModel(world);
+            auto world1 = as.ModelToWorld(model1);
+            assert(glm::all(glm::epsilonEqual(model1, model, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world, eps)));
+
+            auto w2mmat = as.WorldToModelMat();
+            auto m2wmat = as.ModelToWorldMat();
+            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+
+            assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
+
+        }
+
+        {
+            using T = double;
+            glm::tvec3<T> originPos{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> horizontalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            glm::tvec3<T> verticalV{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+            SmartLib::AxisSystem<T> asTemp;
+            asTemp.MakeFromOHV(originPos, horizontalV, verticalV);
+
+            /////////////////////////////////////
+            SmartLib::AxisSystem<T> as;
+            as.SetAxis(asTemp.GetAxis());
+            as.SetScale(asTemp.GetScale());
+            as.SetOrigin(asTemp.GetOrigin());
+
+            glm::tvec3<T> scalar{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+            index += 3;
+            as.SetScale(scalar);
+
+            glm::tvec3<T> origin{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+            index += 3;
+            as.SetOrigin(origin);
+
+
+            const int loopCount = 5;
+            for(int ii = 0; ii < loopCount; ++ ii)
+            {
+
+                glm::tvec3<T> scalar1{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+                index += 3;
+                as.Scale(scalar1);
+
+                T radians = buffer[index + 0];
+                index += 1;
+                glm::tvec3<T> rotAxis{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+                index += 3;
+                as.RotateAbsolutely(radians, rotAxis);
+
+
+                T radians1 = buffer[index + 0];
+                index += 1;
+                glm::tvec3<T> rotAxis1{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+                index += 3;
+                as.Rotate(radians1, rotAxis1);
+
+
+                glm::tvec3<T> offset{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+                index += 3;
+                as.TranslateAbsolutely(offset);
+
+                glm::tvec3<T> offset1{buffer[index + 0], buffer[index + 1], buffer[index + 2]};
+                index += 3;
+                as.Translate(offset);
+            }
+
+
+
+            //////////////////////////
+            glm::tvec3<T> model{buffer[index+0],
+                        buffer[index+1],
+                        buffer[index+2]};
+            index += 3;
+
+            auto world = as.ModelToWorld(model);
+            auto model1 = as.WorldToModel(world);
+            auto world1 = as.ModelToWorld(model1);
+            assert(glm::all(glm::epsilonEqual(model1, model, (T)eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world, (T)eps)));
+
+            auto w2mmat = as.WorldToModelMat();
+            auto m2wmat = as.ModelToWorldMat();
+            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+
+            assert(glm::all(glm::epsilonEqual(model1, model2, (T)eps)));
+            assert(glm::all(glm::epsilonEqual(world1, world2, (T)eps)));
+
+
+        }
+
+
+    }
+
+
+
+
+
+}
 

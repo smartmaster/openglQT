@@ -17,6 +17,8 @@ public:
 private slots:
     void on_pushButtonTestAxisSystem_clicked();
 
+    void on_pushButtonTestAll_clicked();
+
 private:
     Ui::TestTab *ui;
 };

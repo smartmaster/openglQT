@@ -22,9 +22,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="QPushButton" name="pushButtonTestAll">
      <property name="text">
-      <string>PushButton</string>
+      <string>Test All Axis System</string>
      </property>
     </widget>
    </item>

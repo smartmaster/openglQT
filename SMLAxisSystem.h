@@ -3,14 +3,15 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
+#include <glm/gtc/epsilon.hpp>
 
 namespace SmartLib
 {
-template<typename T>
+template<typename T = float>
 class AxisSystem
 {
 private:
-    glm::tmat4x4<T> _axis{T{1}};              // the vector of x y z axis
+    glm::tmat4x4<T> _axis{T{1}};             // the vector of x y z axis
     glm::tvec3<T> _unitLen{T{1},T{1},T{1}};  // unit length of the x y z axis
     glm::tvec3<T> _origin{T{0}, T{0}, T{0}}; //in world (absolute) system
 
@@ -18,23 +19,78 @@ private:
     inline static const glm::tvec3<T> VecAllOne{T{1}, T{1}, T{1}};
 
 public:
-    AxisSystem& Translate(const glm::tvec3<T>& offset) //move along with the current axis directions
+    //move along the current axis directions and with the current unit length
+    AxisSystem& Translate(const glm::tvec3<T>& offset)
     {
         _origin += Mat4xVec3(_axis, offset * _unitLen);
         return *this;
     }
 
+    //move along the absolute (world) axis directions
+    AxisSystem& TranslateAbsolutely(const glm::tvec3<T>& offset)
+    {
+        _origin += offset;
+        return *this;
+    }
 
+    //rotate in current coordinates system
+    AxisSystem& Rotate(T radians, const glm::tvec3<T>& rotAxis)
+    {
+        auto rotAxisAbsolutely = Mat4xVec3V(_axis, rotAxis);
+        return RotateAbsolutely(radians, rotAxisAbsolutely);
+    }
+
+
+    //rotate in absolute (world) coordinates system
+    AxisSystem& RotateAbsolutely(T radians, const glm::tvec3<T>& rotAxis)
+    {
+        _axis = glm::rotate<T>(MatIden, radians, rotAxis) * _axis;
+        return *this;
+    }
+
+
+    //scale in current coordinates system
     AxisSystem& Scale(const glm::tvec3<T>& scalar)
     {
         _unitLen *= scalar;
         return *this;
     }
 
-    AxisSystem& Rotate(T radians, const glm::tvec3<T>& rotAxis)
+
+    AxisSystem& SetScale(const glm::tvec3<T>& scalar)
     {
-        _axis = glm::rotate<T>(MatIden, radians, rotAxis) * _axis;
+        _unitLen = scalar;
         return *this;
+    }
+
+
+    AxisSystem& SetOrigin(const glm::tvec3<T>& origin)
+    {
+        _origin = origin;
+        return *this;
+    }
+
+    AxisSystem& SetAxis(const glm::tmat4x4<T>& axis)
+    {
+        _axis = axis;
+        return *this;
+    }
+
+
+    const glm::tvec3<T>& GetScale() const
+    {
+       return _unitLen;
+    }
+
+
+    const glm::tvec3<T>& GetOrigin() const
+    {
+        return _origin;
+    }
+
+    const glm::tmat4x4<T>& GetAxis() const
+    {
+        return _axis;
     }
 
 
@@ -84,6 +140,7 @@ public:
     }
 
 
+    //note: horizontalV verticalV and zV should be orthogonal to each other
     void MakeFromOHVZ(
             const glm::tvec3<T>& originPos,
             const glm::tvec3<T>& horizontalV,
@@ -101,22 +158,46 @@ public:
 
     static glm::tvec3<T> V4ToV3(const glm::tvec4<T>& v4)
     {
-        return glm::tvec3<T>{v4};
+        if(glm::epsilonNotEqual(v4[3], T{0}, glm::epsilon<T>()*T{100}))
+        {
+            T inverse = T{1}/v4[3];
+            return glm::tvec3<T>{v4 * inverse};
+        }
+        else
+        {
+            return glm::tvec3<T>{v4};
+        }
     }
 
-    static glm::tvec4<T> V3ToV4(const glm::tvec4<T>& v3)
+    static glm::tvec4<T> V3ToV4(const glm::tvec3<T>& v3)
     {
-        return glm::tvec4<T>{v3, T{1}};
+        return glm::tvec4<T>{v3, T{1}}; //positional point
+    }
+
+    static glm::tvec4<T> V3ToV4V(const glm::tvec3<T>& v3)
+    {
+        return glm::tvec4<T>{v3, T{0}}; //directional vector
     }
 
     static glm::tvec3<T> Mat4xVec3(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
     {
-        return glm::tvec3<T>{m4 * glm::tvec4<T>{v3, T{1}}} ;
+        return glm::tvec3<T>{m4 * glm::tvec4<T>{v3, T{1}}} ; //positional point
+    }
+
+    static glm::tvec3<T> Mat4xVec3V(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
+    {
+        return glm::tvec3<T>{m4 * glm::tvec4<T>{v3, T{0}}} ; //directional vector
     }
 
     static glm::tvec3<T> Mat4xVec4(const glm::tmat4x4<T>& m4, const glm::tvec4<T>& v4)
     {
-        return glm::tvec3<T>{m4 * v4} ;
+        auto vec = m4 * v4;
+        if(glm::epsilonNotEqual(vec[3], T{0}, glm::epsilon<T>()*T{100}))
+        {
+            T inverse = T{1}/vec[3];
+            vec *= inverse;
+        }
+        return glm::tvec3<T>(vec);
     }
 
 
