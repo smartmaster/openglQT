@@ -70,6 +70,7 @@ public:
         return *this;
     }
 
+    //axis should be unit and orthogonal matrix
     AxisSystem& SetAxis(const glm::tmat4x4<T>& axis)
     {
         _axis = axis;
