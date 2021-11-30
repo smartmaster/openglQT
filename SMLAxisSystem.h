@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
@@ -7,18 +8,75 @@
 
 namespace SmartLib
 {
-template<typename T = float>
+template<typename T = double>
 class AxisSystem
 {
+private:
+    inline static const glm::tmat4x4<T> MatIdentity{T{1}};
+    inline static const glm::tvec3<T> VecAllOne{T{1}, T{1}, T{1}};
+    inline static const glm::tvec3<T> VecAllZero{T{0}, T{0}, T{0}};
+
 private:
     glm::tmat4x4<T> _axis{T{1}};             // the vector of x y z axis
     glm::tvec3<T> _unitLen{T{1},T{1},T{1}};  // unit length of the x y z axis
     glm::tvec3<T> _origin{T{0}, T{0}, T{0}}; //in world (absolute) system
 
-    inline static const glm::tmat4x4<T> MatIden{T{1}};
-    inline static const glm::tvec3<T> VecAllOne{T{1}, T{1}, T{1}};
+public:
+//    using mat4 = glm::tmat4x4<T>;
+//    using mat3 = glm::tmat3x3<T>;
+//    using mat2 = glm::tmat2x2<T>;
+
+//    using vec4 = glm::tvec4<T>;
+//    using vec3 = glm::tvec3<T>;
+//    using vec2 = glm::tvec2<T>;
+
 
 public:
+
+    AxisSystem()
+    {
+    }
+
+    AxisSystem(const AxisSystem& as) :
+        _axis{as._axis},
+        _unitLen{as._unitLen},
+        _origin{as._origin}
+    {
+    }
+
+    AxisSystem(AxisSystem&& as) :
+        _axis{std::move(as._axis)},
+        _unitLen{std::move(as._unitLen)},
+        _origin{std::move(as._origin)}
+    {
+    }
+
+    const AxisSystem& operator=(const AxisSystem& as)
+    {
+        _axis = as._axis;
+        _unitLen = as._unitLen;
+        _origin = as._origin;
+        return *this;
+    }
+
+    const AxisSystem& operator=(AxisSystem&& as)
+    {
+        _axis = std::move(as._axis);
+        _unitLen = std::move(as._unitLen);
+        _origin = std::move(as._origin);
+        return *this;
+    }
+
+    AxisSystem& Reset()
+    {
+        _axis = MatIdentity;
+        _unitLen = VecAllOne;
+        _origin = VecAllZero;
+        return *this;
+    }
+
+
+
     //move along the current axis directions and with the current unit length
     AxisSystem& Translate(const glm::tvec3<T>& offset)
     {
@@ -44,7 +102,7 @@ public:
     //rotate in absolute (world) coordinates system
     AxisSystem& RotateAbsolutely(T radians, const glm::tvec3<T>& rotAxis)
     {
-        _axis = glm::rotate<T>(MatIden, radians, rotAxis) * _axis;
+        _axis = glm::rotate<T>(MatIdentity, radians, rotAxis) * _axis;
         return *this;
     }
 
@@ -107,9 +165,9 @@ public:
 
     const glm::tmat4x4<T> ModelToWorldMat() const
     {
-        auto matScale = glm::scale<T>(MatIden, _unitLen);
+        auto matScale = glm::scale<T>(MatIdentity, _unitLen);
 
-        auto matTrans = glm::translate<T>(MatIden, _origin);
+        auto matTrans = glm::translate<T>(MatIdentity, _origin);
 
         return matTrans * _axis * matScale;
 
@@ -117,9 +175,9 @@ public:
 
     const glm::tmat4x4<T> WorldToModelMat() const
     {
-        auto matTrans = glm::translate(MatIden, -_origin);
+        auto matTrans = glm::translate(MatIdentity, -_origin);
         auto matRot = glm::transpose(_axis); // is equal to glm::inverse<T>(_axis)
-        auto matScale = glm::scale(MatIden, VecAllOne/_unitLen);
+        auto matScale = glm::scale(MatIdentity, VecAllOne/_unitLen);
         return matScale * matRot * matTrans;
     }
 
@@ -159,7 +217,7 @@ public:
 
     static glm::tvec3<T> V4ToV3(const glm::tvec4<T>& v4)
     {
-        if(glm::epsilonNotEqual(v4[3], T{0}, glm::epsilon<T>()*T{100}))
+        if(glm::epsilonNotEqual(v4[3], T{0}, glm::epsilon<T>()*T{1000}))
         {
             T inverse = T{1}/v4[3];
             return glm::tvec3<T>{v4 * inverse};
@@ -193,7 +251,7 @@ public:
     static glm::tvec3<T> Mat4xVec4(const glm::tmat4x4<T>& m4, const glm::tvec4<T>& v4)
     {
         auto vec = m4 * v4;
-        if(glm::epsilonNotEqual(vec[3], T{0}, glm::epsilon<T>()*T{100}))
+        if(glm::epsilonNotEqual(vec[3], T{0}, glm::epsilon<T>()*T{1000}))
         {
             T inverse = T{1}/vec[3];
             vec *= inverse;
@@ -231,7 +289,7 @@ public:
 
         auto mat = axisSys.WorldToModelMat();
 
-        //adjust to satisfy glm rule
+        //adjust sign to satisfy glm rule
         mat[2][2] = -mat[2][2];
         for(int ii = 0; ii < 3; ++ ii)
         {
