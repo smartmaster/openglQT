@@ -19,12 +19,7 @@ MyOglWidget::MyOglWidget(QWidget *parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-    /////////////////////////////////////////////////////////////////
-    QSurfaceFormat format;
-    format.setVersion(4, 5);
-    format.setProfile(QSurfaceFormat::CoreProfile);
-    format.setOption(QSurfaceFormat::DebugContext);
-    setFormat(format);
+
 
     /////////////////////////////////////////////////////////////////
     _updateTimer = new QTimer{this};
@@ -335,12 +330,7 @@ void MyOglWidget::paintGL()
     glClearColor(0.768f, 0.372f, 0.635f, 1.0f);
 
 
-    /////////////////////////////////////////////////////////////////
-    float halfWidth = _logicalUnit * width() / height();
 
-    glm::mat4 frustum = glm::frustum<float>(-halfWidth, halfWidth,
-                                            -_logicalUnit, _logicalUnit,
-                                            _logicalHeight, 512.0f*_logicalHeight);
 
     glm::mat4 view = glm::lookAt<float>(
                 _eye,
@@ -368,7 +358,7 @@ void MyOglWidget::paintGL()
 
     //glm::mat4  model = modelT * modelR * modelS;
 
-    glm::mat4 mvp = frustum * view * model;
+    glm::mat4 mvp = _frustum * view * model;
 
 
     /////////////////////////////////////////////////////////////////
@@ -471,6 +461,13 @@ void MyOglWidget::paintGL()
 
 void MyOglWidget::resizeGL(int w, int h)
 {
+    /////////////////////////////////////////////////////////////////
+    float halfWidth = _logicalUnit * width() / height();
+
+    _frustum = glm::frustum<float>(-halfWidth, halfWidth,
+                                            -_logicalUnit, _logicalUnit,
+                                            _logicalHeight, 512.0f*_logicalHeight);
+
     glViewport(0, 0, w, h);
 }
 

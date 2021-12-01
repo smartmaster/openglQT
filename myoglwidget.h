@@ -82,6 +82,7 @@ private:
 
 
     SmartLib::AxisSystem<float> _axisModel;
+    glm::mat4 _frustum;
 
 
 };
