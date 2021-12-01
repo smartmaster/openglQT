@@ -47,55 +47,7 @@ MyOglWidget::~MyOglWidget()
     }
 
 
-    makeCurrent();
 
-    /////////////////////////////////////////////////////////////////
-    if(_vboPos != -1)
-    {
-        glDeleteBuffers(1, &_vboPos);
-        _vboPos = -1;
-    }
-
-    if(_vboColor != -1)
-    {
-        glDeleteBuffers(1, &_vboColor);
-        _vboColor = -1;
-    }
-
-    if(_vboElemet != -1)
-    {
-        glDeleteBuffers(1, &_vboElemet);
-        _vboElemet = -1;
-    }
-
-    /////////////////////////////////////////////////////////////////
-    if(_vboPosLine != -1)
-    {
-        glDeleteBuffers(1, &_vboPosLine);
-        _vboPosLine = -1;
-    }
-
-    if(_vboColorLine != -1)
-    {
-        glDeleteBuffers(1, &_vboColorLine);
-        _vboColorLine = -1;
-    }
-
-    if(_vboElemetLine != -1)
-    {
-        glDeleteBuffers(1, &_vboElemetLine);
-        _vboElemetLine = -1;
-    }
-
-
-    /////////////////////////////////////////////////////////////////
-    if(_vao != -1)
-    {
-        glDeleteVertexArrays(1, &_vao);
-        _vao = -1;
-    }
-
-    doneCurrent();
 }
 
 
@@ -253,6 +205,8 @@ void MyOglWidget::initializeGL()
 {
     /////////////////////////////////////////////////////////////////
     initializeOpenGLFunctions();
+
+    connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &MyOglWidget::on_aboutToBeDestroyed);
 
     glDebugMessageCallback(&MyOglWidget::DEBUGPROC, this);
 
@@ -631,4 +585,57 @@ void MyOglWidget::on_timeout()
     {
         this->update();
     }
+}
+
+void MyOglWidget::on_aboutToBeDestroyed()
+{
+    makeCurrent();
+
+    /////////////////////////////////////////////////////////////////
+    if(_vboPos != -1)
+    {
+        glDeleteBuffers(1, &_vboPos);
+        _vboPos = -1;
+    }
+
+    if(_vboColor != -1)
+    {
+        glDeleteBuffers(1, &_vboColor);
+        _vboColor = -1;
+    }
+
+    if(_vboElemet != -1)
+    {
+        glDeleteBuffers(1, &_vboElemet);
+        _vboElemet = -1;
+    }
+
+    /////////////////////////////////////////////////////////////////
+    if(_vboPosLine != -1)
+    {
+        glDeleteBuffers(1, &_vboPosLine);
+        _vboPosLine = -1;
+    }
+
+    if(_vboColorLine != -1)
+    {
+        glDeleteBuffers(1, &_vboColorLine);
+        _vboColorLine = -1;
+    }
+
+    if(_vboElemetLine != -1)
+    {
+        glDeleteBuffers(1, &_vboElemetLine);
+        _vboElemetLine = -1;
+    }
+
+
+    /////////////////////////////////////////////////////////////////
+    if(_vao != -1)
+    {
+        glDeleteVertexArrays(1, &_vao);
+        _vao = -1;
+    }
+
+    doneCurrent();
 }

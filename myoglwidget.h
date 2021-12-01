@@ -31,6 +31,7 @@ protected:
 private slots:
     //void on_frameSwapped();
     void on_timeout();
+    void on_aboutToBeDestroyed();
 
 private:
     void CreateProgram(const GLchar * const vertSource, const GLchar *const  fragSource);
