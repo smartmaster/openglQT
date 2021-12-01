@@ -19,17 +19,11 @@ MyOglWidget::MyOglWidget(QWidget *parent)
 {
     setFocusPolicy(Qt::StrongFocus);
 
-
-
     /////////////////////////////////////////////////////////////////
     _updateTimer = new QTimer{this};
     const int millSec = 16;//16 ms, about 60 fps per second
     _updateTimer->setInterval(millSec);
     connect(_updateTimer, &QTimer::timeout, this, &MyOglWidget::on_timeout);
-
-
-    /////////////////////////////////////////////////////////////////
-    ResetEye();
 
 }
 
@@ -80,23 +74,21 @@ void MyOglWidget::CreateProgram(const GLchar * const vertSource, const GLchar *c
     fragShader = 0;
 }
 
-void MyOglWidget::ResetEye()
-{
+//void MyOglWidget::ResetEye()
+//{
 
-    /////////////////////////////////////////////////////////////////
-    _eye = glm::vec3{0.0f, 0.0f, 0.0f};
+//    /////////////////////////////////////////////////////////////////
+//    //static const auto negZ = glm::vec3(0.0f, 0.0f, -1.0f);
+//    //static const auto upY = glm::vec3(0.0f, 1.0f, 0.0f);
+//    //auto eyeX = glm::cross(upY, negZ);
 
-    /////////////////////////////////////////////////////////////////
-    static const auto negZ = glm::vec3(0.0f, 0.0f, -1.0f);
-    static const auto upY = glm::vec3(0.0f, 1.0f, 0.0f);
-    auto eyeX = glm::cross(upY, negZ);
+//    //_axisEye.MakeFromOHVZ(glm::vec3{0.0f, 0.0f, 0.0f},
+//    //                     eyeX,
+//    //                     upY,
+//    //                     negZ);
 
-    _eyeAxis[0] = glm::vec4(eyeX, 0.0f);
-    _eyeAxis[1] = glm::vec4(upY, 0.0f);
-    _eyeAxis[2] = glm::vec4(negZ, 0.0f);
-    _eyeAxis[3] = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-}
+//    _axisEye.Reset();
+//}
 
 void MyOglWidget::DebugPoc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message)
 {
@@ -204,6 +196,12 @@ static GLuint oglLineindics[] = {
 void MyOglWidget::initializeGL()
 {
     /////////////////////////////////////////////////////////////////
+    //ResetEye();
+    _axisEye.Reset();
+    _axisModel.Reset();
+    _axisModel.SetOrigin(glm::vec3(0.0f, 0.0f, SML_SCALE(DISTANCE_POINT)));
+
+    /////////////////////////////////////////////////////////////////
     initializeOpenGLFunctions();
 
     connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &MyOglWidget::on_aboutToBeDestroyed);
@@ -291,11 +289,12 @@ void MyOglWidget::paintGL()
 
 
 
-    glm::mat4 view = glm::lookAt<float>(
-                _eye,
-                _eye + glm::vec3(_eyeAxis[2]), //lookinto -z
-            glm::vec3(_eyeAxis[1])); //upper y
+//    glm::mat4 view = glm::lookAt<float>(
+//                _eye,
+//                _eye + glm::vec3(_eyeAxis[2]), //lookinto -z
+//            glm::vec3(_eyeAxis[1])); //upper y
 
+    glm::mat4 view = _axisEye.WorldToModelMat();
 
 
     /////////////////////////////////////////////////////////////////
@@ -344,7 +343,7 @@ void MyOglWidget::paintGL()
         auto str0 = glm::to_string(v0/v0[3]);
         auto str1 = glm::to_string(v1/v1[3]);
         auto str2 = glm::to_string(v2/v2[3]);
-        auto str3 = glm::to_string(v3/v2[3]);
+        auto str3 = glm::to_string(v3/v3[3]);
 
     }
 #endif
@@ -421,7 +420,7 @@ void MyOglWidget::paintGL()
 void MyOglWidget::resizeGL(int w, int h)
 {
     /////////////////////////////////////////////////////////////////
-    float halfWidth = _logicalUnit * width() / height();
+    float halfWidth = _logicalUnit * w / h;
 
     _frustum = glm::frustum<float>(-halfWidth, halfWidth,
                                             -_logicalUnit, _logicalUnit,
@@ -447,90 +446,84 @@ void MyOglWidget::keyPressEvent(QKeyEvent *event)
 
     case Qt::Key_Space:
     {
-        ResetEye();
+        //ResetEye();
+        _axisEye.Reset();
+        _axisModel.Reset();
+         _axisModel.SetOrigin(glm::vec3(0.0f, 0.0f, SML_SCALE(DISTANCE_POINT)));
     }
         break;
 
     case Qt::Key_W:
     {
-        _eye[2] -= SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{0.0f, 0.0f, SML_SCALE(-ratio)});
     }
         break;
 
     case Qt::Key_S:
     {
-        _eye[2] += SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{0.0f, 0.0f, SML_SCALE(+ratio)});
     }
         break;
 
     case Qt::Key_A:
     {
-        _eye[0] -= SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{SML_SCALE(-ratio), 0.0f, 0.0f});
     }
         break;
 
     case Qt::Key_D:
     {
-        _eye[0] += SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{SML_SCALE(+ratio), 0.0f, 0.0f});
     }
         break;
 
     case Qt::Key_Q:
     {
-        _eye[1] -= SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{0.0f, SML_SCALE(-ratio), 0.0f});
     }
         break;
 
     case Qt::Key_E:
     {
-        _eye[1] += SML_SCALE(ratio);
+        _axisEye.Translate(glm::vec3{0.0f, SML_SCALE(+ratio), 0.0f});
     }
         break;
 
 
-    case Qt::Key_Up:
-    case Qt::Key_5:
+    case Qt::Key_I:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, -glm::radians(angleDelta), AxisX);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(-angleDelta), glm::vec3{1.0f, 0.0f, 0.0f});
     }
         break;
 
-    case Qt::Key_Down:
-    case Qt::Key_2:
+    case Qt::Key_K:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, glm::radians(angleDelta), AxisX);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(+angleDelta), glm::vec3{1.0f, 0.0f, 0.0f});
     }
         break;
 
-    case Qt::Key_Left:
-    case Qt::Key_1:
+
+    case Qt::Key_J:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, glm::radians(angleDelta), AxisZ);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(+angleDelta), glm::vec3{0.0f, 0.0f, 1.0f});
     }
         break;
 
-    case Qt::Key_Right:
-    case Qt::Key_3:
+    case Qt::Key_L:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, -glm::radians(angleDelta), AxisZ);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(-angleDelta), glm::vec3{0.0f, 0.0f, 1.0f});
     }
         break;
 
-    case Qt::Key_4:
+    case Qt::Key_U:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, glm::radians(angleDelta), AxisY);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(+angleDelta), glm::vec3{0.0f, 1.0f, 0.0f});
     }
         break;
 
-    case Qt::Key_6:
+    case Qt::Key_O:
     {
-        auto rot = glm::rotate(glm::mat4{1.0f}, -glm::radians(angleDelta), AxisY);
-        _eyeAxis = rot * _eyeAxis;
+        _axisEye.Rotate(glm::radians(-angleDelta), glm::vec3{0.0f, 1.0f, 0.0f});
     }
         break;
 
@@ -549,13 +542,9 @@ void MyOglWidget::keyPressEvent(QKeyEvent *event)
 void MyOglWidget::on_timeout()
 {
 
-    if(!_axisInited)
-    {
-        _axisModel.SetOrigin(glm::vec3(0.0f, 0.0f, SML_SCALE(DISTANCE_POINT)));
-        //_offsetZ = SML_SCALE(DISTANCE_POINT);
-        _axisInited = true;
-    }
+
     static constexpr float angle_delta = 1.0f;
+    //static constexpr float angle_delta = 0.0f; //no rotation
     float radians = glm::radians(angle_delta);
     _axisModel.Rotate(radians, glm::vec3(1.0f, 0.0f, 0.0f))
             .Rotate(radians, glm::vec3(0.0f, 1.0f, 0.0f))

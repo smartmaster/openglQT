@@ -35,7 +35,7 @@ private slots:
 
 private:
     void CreateProgram(const GLchar * const vertSource, const GLchar *const  fragSource);
-    void ResetEye();
+    //void ResetEye();
 
 private:
     void DebugPoc(GLenum source,
@@ -71,8 +71,9 @@ private:
     QTimer* _updateTimer{nullptr};
 
 
-    glm::mat4 _eyeAxis{1.0f};
-    glm::vec3 _eye{0.0f, 0.0f, 0.0f};
+    //glm::mat4 _eyeAxis{1.0f};
+    //glm::vec3 _eye{0.0f, 0.0f, 0.0f};
+
     float _offsetZ{0.0f};
     bool _dirInc{false};
 
@@ -83,6 +84,7 @@ private:
 
 
     SmartLib::AxisSystem<float> _axisModel;
+    SmartLib::AxisSystem<float> _axisEye;
     glm::mat4 _frustum;
 
 
