@@ -188,10 +188,15 @@ static constexpr float DISTANCE_POINT = -4.5f;
 
 static GLfloat oglpos[] =
 {
-    SML_SCALE(1.0f),    SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
-    SML_SCALE(0.0f),    SML_SCALE(1.0f),    SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
-    SML_SCALE(-1.0f),   SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
-    SML_SCALE(0.0f),    SML_SCALE(0.0f),    SML_SCALE(DISTANCE_POINT), 1.0f,
+//    SML_SCALE(1.0f),    SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+//    SML_SCALE(0.0f),    SML_SCALE(1.0f),    SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+//    SML_SCALE(-1.0f),   SML_SCALE(-1.0f),   SML_SCALE(DISTANCE_TRIANGLE), 1.0f,
+//    SML_SCALE(0.0f),    SML_SCALE(0.0f),    SML_SCALE(DISTANCE_POINT), 1.0f,
+
+    SML_SCALE(1.0f),    SML_SCALE(-1.0f),   SML_SCALE(0.0f), 1.0f,
+    SML_SCALE(0.0f),    SML_SCALE(1.0f),    SML_SCALE(0.0f), 1.0f,
+    SML_SCALE(-1.0f),   SML_SCALE(-1.0f),   SML_SCALE(0.0f), 1.0f,
+    SML_SCALE(0.0f),    SML_SCALE(0.0f),    SML_SCALE(-1.5f), 1.0f,
 };
 
 static GLfloat oglcolor[] =
