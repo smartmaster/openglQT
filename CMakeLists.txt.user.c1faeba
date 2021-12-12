@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 6.0.0, 2021-12-04T23:58:40. -->
+<!-- Written by QtCreator 6.0.0, 2021-12-04T10:06:43. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
-  <value type="QByteArray">{386396f7-a7ae-4ec5-90c4-7bd5c3e097c6}</value>
+  <value type="QByteArray">{c1faeba1-cb8d-4bd7-a3e2-61035bedad40}</value>
  </data>
  <data>
   <variable>ProjectExplorer.Project.ActiveTarget</variable>
@@ -93,7 +93,7 @@
    <value type="QString" key="DeviceType">Desktop</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Desktop (x86-windows-msvc2022-pe-64bit)</value>
    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Desktop (x86-windows-msvc2022-pe-64bit)</value>
-   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{a0cd4e5a-be0d-48ea-bd46-024defa186c0}</value>
+   <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">{ab5e35a6-7e15-4aec-bad5-b137bc239f6a}</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveBuildConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveDeployConfiguration">0</value>
    <value type="qlonglong" key="ProjectExplorer.Target.ActiveRunConfiguration">0</value>
@@ -102,10 +102,10 @@
     <value type="QString" key="CMake.Initial.Parameters">-GNinja
 -DCMAKE_BUILD_TYPE:STRING=Debug
 -DCMAKE_PROJECT_INCLUDE_BEFORE:PATH=%{IDE:ResourcePath}/package-manager/auto-setup.cmake
--DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}
--DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
--DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
+-DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\zzz-temp\build-qopenglHello-Desktop_x86_windows_msvc2022_pe_64bit-Debug</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -148,10 +148,10 @@
     <value type="QString" key="CMake.Initial.Parameters">-GNinja
 -DCMAKE_BUILD_TYPE:STRING=Release
 -DCMAKE_PROJECT_INCLUDE_BEFORE:PATH=%{IDE:ResourcePath}/package-manager/auto-setup.cmake
--DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}
--DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
--DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
+-DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\zzz-temp\build-qopenglHello-Desktop_x86_windows_msvc2022_pe_64bit-Release</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -192,10 +192,10 @@
     <value type="QString" key="CMake.Initial.Parameters">-GNinja
 -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo
 -DCMAKE_PROJECT_INCLUDE_BEFORE:PATH=%{IDE:ResourcePath}/package-manager/auto-setup.cmake
--DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}
--DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
--DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
+-DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\zzz-temp\build-qopenglHello-Desktop_x86_windows_msvc2022_pe_64bit-RelWithDebInfo</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
@@ -236,10 +236,10 @@
     <value type="QString" key="CMake.Initial.Parameters">-GNinja
 -DCMAKE_BUILD_TYPE:STRING=MinSizeRel
 -DCMAKE_PROJECT_INCLUDE_BEFORE:PATH=%{IDE:ResourcePath}/package-manager/auto-setup.cmake
--DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}
--DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}
 -DCMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}
--DQT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
+-DCMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}
+-DCMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
     <value type="QString" key="ProjectExplorer.BuildConfiguration.BuildDirectory">C:\zzz-temp\build-qopenglHello-Desktop_x86_windows_msvc2022_pe_64bit-MinSizeRel</value>
     <valuemap type="QVariantMap" key="ProjectExplorer.BuildConfiguration.BuildStepList.0">
      <valuemap type="QVariantMap" key="ProjectExplorer.BuildStepList.Step.0">
