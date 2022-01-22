@@ -422,9 +422,19 @@ void MyOglWidget::resizeGL(int w, int h)
     /////////////////////////////////////////////////////////////////
     float halfWidth = _logicalUnit * w / h;
 
+#if true
+
     _frustum = glm::frustum<float>(-halfWidth, halfWidth,
                                             -_logicalUnit, _logicalUnit,
                                             _logicalHeight, 512.0f*_logicalHeight);
+
+#else
+
+    _frustum = SmartLib::AxisSystem<float>::Ortho(-halfWidth, halfWidth,
+                                                  -_logicalUnit, _logicalUnit,
+                                                 _logicalHeight, 512.0f*_logicalHeight);
+
+#endif
 
     glViewport(0, 0, w, h);
 }
