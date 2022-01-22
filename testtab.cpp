@@ -51,11 +51,11 @@ void TestTab::on_pushButtonTestAxisSystem_clicked()
     assert(glm::all(glm::epsilonEqual(model1, model, eps)));
 
     auto matm2w = axisSys.ModelToWorldMat();
-    auto world1 = AxisSystem<double>::Mat4xVec3(matm2w, model);
+    auto world1 = AxisSystem<double>::M4xP3(matm2w, model);
     assert(glm::all(glm::epsilonEqual(world1, world, eps)));
 
     auto matw2m = axisSys.WorldToModelMat();
-    auto model2 = AxisSystem<double>::Mat4xVec3(matw2m, world);
+    auto model2 = AxisSystem<double>::M4xP3(matw2m, world);
     assert(glm::all(glm::epsilonEqual(model2, model, eps)));
 
 
@@ -221,7 +221,7 @@ void TestTab::on_pushButtonTestAll_clicked()
 
         {
 
-            auto vec =  SmartLib::AxisSystem<T>::Mat4xVec4(m4, v4);
+            auto vec =  SmartLib::AxisSystem<T>::M4xV4(m4, v4);
             std::string str = glm::to_string(vec);
         }
 
@@ -231,22 +231,22 @@ void TestTab::on_pushButtonTestAll_clicked()
         index += 3;
 
         {
-            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::Mat4xVec3V(m4, v3);
+            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::M4xV3(m4, v3);
             std::string str = glm::to_string(vec);
         }
 
         {
-            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::Mat4xVec3(m4, v3);
-            std::string str = glm::to_string(vec);
-        }
-
-        {
-            glm::tvec4<T> vec = SmartLib::AxisSystem<T>::V3ToV4V(v3);
+            glm::tvec3<T> vec = SmartLib::AxisSystem<T>::M4xP3(m4, v3);
             std::string str = glm::to_string(vec);
         }
 
         {
             glm::tvec4<T> vec = SmartLib::AxisSystem<T>::V3ToV4(v3);
+            std::string str = glm::to_string(vec);
+        }
+
+        {
+            glm::tvec4<T> vec = SmartLib::AxisSystem<T>::V3ToP4(v3);
             std::string str = glm::to_string(vec);
         }
 
@@ -287,8 +287,8 @@ void TestTab::on_pushButtonTestAll_clicked()
 
             auto w2mmat = as.WorldToModelMat();
             auto m2wmat = as.ModelToWorldMat();
-            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
-            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+            auto world2 = SmartLib::AxisSystem<T>::M4xP3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::M4xP3(w2mmat, world2);
 
             assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
             assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
@@ -324,8 +324,8 @@ void TestTab::on_pushButtonTestAll_clicked()
 
             auto w2mmat = as.WorldToModelMat();
             auto m2wmat = as.ModelToWorldMat();
-            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
-            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+            auto world2 = SmartLib::AxisSystem<T>::M4xP3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::M4xP3(w2mmat, world2);
 
             assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
             assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
@@ -361,8 +361,8 @@ void TestTab::on_pushButtonTestAll_clicked()
 
             auto w2mmat = as.WorldToModelMat();
             auto m2wmat = as.ModelToWorldMat();
-            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
-            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+            auto world2 = SmartLib::AxisSystem<T>::M4xP3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::M4xP3(w2mmat, world2);
 
             assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
             assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
@@ -399,8 +399,8 @@ void TestTab::on_pushButtonTestAll_clicked()
 
             auto w2mmat = as.WorldToModelMat();
             auto m2wmat = as.ModelToWorldMat();
-            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
-            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+            auto world2 = SmartLib::AxisSystem<T>::M4xP3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::M4xP3(w2mmat, world2);
 
             assert(glm::all(glm::epsilonEqual(model1, model2, eps)));
             assert(glm::all(glm::epsilonEqual(world1, world2, eps)));
@@ -486,8 +486,8 @@ void TestTab::on_pushButtonTestAll_clicked()
 
             auto w2mmat = as.WorldToModelMat();
             auto m2wmat = as.ModelToWorldMat();
-            auto world2 = SmartLib::AxisSystem<T>::Mat4xVec3(m2wmat, model1);
-            auto model2 = SmartLib::AxisSystem<T>::Mat4xVec3(w2mmat, world2);
+            auto world2 = SmartLib::AxisSystem<T>::M4xP3(m2wmat, model1);
+            auto model2 = SmartLib::AxisSystem<T>::M4xP3(w2mmat, world2);
 
             assert(glm::all(glm::epsilonEqual(model1, model2, (T)eps)));
             assert(glm::all(glm::epsilonEqual(world1, world2, (T)eps)));

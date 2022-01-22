@@ -80,29 +80,30 @@ public:
     //move along the current axis directions and with the current unit length
     AxisSystem& Translate(const glm::tvec3<T>& offset)
     {
-        _origin += Mat4xVec3(_axis, offset * _unitLen);
+        _origin += M4xP3(_axis, offset * _unitLen);
         return *this;
     }
 
     //move along the absolute (world) axis directions
-    AxisSystem& TranslateAbsolutely(const glm::tvec3<T>& offset)
+    AxisSystem& TranslateAbsolutely(const glm::tvec3<T>& offsetAbsolutely)
     {
-        _origin += offset;
+        _origin += offsetAbsolutely;
         return *this;
     }
 
     //rotate in current coordinates system
     AxisSystem& Rotate(T radians, const glm::tvec3<T>& rotAxis)
     {
-        auto rotAxisAbsolutely = Mat4xVec3V(_axis, rotAxis);
-        return RotateAbsolutely(radians, rotAxisAbsolutely);
+        auto rotAxisAbsolutely = M4xV3(_axis, rotAxis);
+        _axis = glm::rotate<T>(MatIdentity, radians, rotAxisAbsolutely) * _axis;
+        return *this;
     }
 
 
     //rotate in absolute (world) coordinates system
-    AxisSystem& RotateAbsolutely(T radians, const glm::tvec3<T>& rotAxis)
+    AxisSystem& RotateAbsolutely(T radians, const glm::tvec3<T>& rotAxisAbsolutely)
     {
-        _axis = glm::rotate<T>(MatIdentity, radians, rotAxis) * _axis;
+        _axis = glm::rotate<T>(MatIdentity, radians, rotAxisAbsolutely) * _axis;
         return *this;
     }
 
@@ -155,12 +156,12 @@ public:
 
     const glm::tvec3<T> ModelToWorld(const glm::tvec3<T>& model) const
     {
-        return _origin + Mat4xVec3(_axis, model * _unitLen) ;
+        return _origin + M4xP3(_axis, model * _unitLen) ;
     }
 
     const glm::tvec3<T> WorldToModel(const glm::tvec3<T>& world) const
     {
-        return Mat4xVec3(glm::transpose(_axis), world - _origin)/_unitLen;
+        return M4xP3(glm::transpose(_axis), world - _origin)/_unitLen;
     }
 
     const glm::tmat4x4<T> ModelToWorldMat() const
@@ -228,27 +229,27 @@ public:
         }
     }
 
-    static glm::tvec4<T> V3ToV4(const glm::tvec3<T>& v3)
+    static glm::tvec4<T> V3ToP4(const glm::tvec3<T>& v3)
     {
         return glm::tvec4<T>{v3, T{1}}; //positional point
     }
 
-    static glm::tvec4<T> V3ToV4V(const glm::tvec3<T>& v3)
+    static glm::tvec4<T> V3ToV4(const glm::tvec3<T>& v3)
     {
         return glm::tvec4<T>{v3, T{0}}; //directional vector
     }
 
-    static glm::tvec3<T> Mat4xVec3(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
+    static glm::tvec3<T> M4xP3(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
     {
         return glm::tvec3<T>{m4 * glm::tvec4<T>{v3, T{1}}} ; //positional point
     }
 
-    static glm::tvec3<T> Mat4xVec3V(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
+    static glm::tvec3<T> M4xV3(const glm::tmat4x4<T>& m4, const glm::tvec3<T>& v3)
     {
         return glm::tvec3<T>{m4 * glm::tvec4<T>{v3, T{0}}} ; //directional vector
     }
 
-    static glm::tvec3<T> Mat4xVec4(const glm::tmat4x4<T>& m4, const glm::tvec4<T>& v4)
+    static glm::tvec3<T> M4xV4(const glm::tmat4x4<T>& m4, const glm::tvec4<T>& v4)
     {
         auto vec = m4 * v4;
         if(glm::epsilonNotEqual(vec[3], T{0}, glm::epsilon<T>()*T{1000}))
