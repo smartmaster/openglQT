@@ -14,21 +14,21 @@
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
+   <item alignment="Qt::AlignTop">
     <widget class="QPushButton" name="pushButtonTestAxisSystem">
      <property name="text">
       <string>Test Axis System</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignTop">
     <widget class="QPushButton" name="pushButtonTestAll">
      <property name="text">
       <string>Test All Axis System</string>
      </property>
     </widget>
    </item>
-   <item>
+   <item alignment="Qt::AlignTop">
     <widget class="QPushButton" name="pushButton_3">
      <property name="text">
       <string>PushButton</string>

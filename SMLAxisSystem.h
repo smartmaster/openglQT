@@ -284,17 +284,12 @@ public:
     {
         //////////////////////////////////////
         AxisSystem<T> axisSys;
-        axisSys.Translate(glm::tvec3<T>(-(left + right)/T{2}, -(bottom + top)/T{2}, -(zNear + zFar)/T{2}))
-            .Scale(glm::tvec3<T>((right - left)/T{2}, (top - bottom)/T{2}, (zFar - zNear)/T{2}));
+
+        axisSys.Scale(glm::tvec3<T>{T{1}, T{1}, T{-1}})
+                .Translate(glm::tvec3<T>{(left + right)/T{2}, (bottom + top)/T{2}, (zNear + zFar)/T{2}})
+                .Scale(glm::tvec3<T>{(right - left)/T{2}, (top - bottom)/T{2}, (zFar - zNear)/T{2}});
 
         auto mat = axisSys.WorldToModelMat();
-
-        //adjust sign to satisfy glm rule
-        mat[2][2] = -mat[2][2];
-        for(int ii = 0; ii < 3; ++ ii)
-        {
-            mat[3][ii] = -mat[3][ii];
-        }
 
         return mat;
 
