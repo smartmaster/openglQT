@@ -29,9 +29,9 @@
     </widget>
    </item>
    <item alignment="Qt::AlignTop">
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="pushButton_test_rotmat">
      <property name="text">
-      <string>PushButton</string>
+      <string>Test Rotation Matrix</string>
      </property>
     </widget>
    </item>

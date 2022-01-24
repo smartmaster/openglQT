@@ -495,12 +495,41 @@ void TestTab::on_pushButtonTestAll_clicked()
 
         }
 
-
     }
 
+}
 
 
+void TestTab::on_pushButton_test_rotmat_clicked()
+{
+    using T = float;
+    float eps = glm::epsilon<T>()*1000;
+    std::vector<float> buffer(128);
+    FillRandom(buffer.data(), (int)buffer.size());
 
+    T angle = buffer[0];
+    glm::tvec3<T> raxis{buffer[1], buffer[2], buffer[3]};
+    static  glm::tmat4x4<T> matE4{1};
+    auto glmmat4 = glm::rotate(matE4, angle, raxis);
+    glm::tmat3x3<T> glmmat3
+    {
+        glm::tvec3<T>{glmmat4[0]},
+        glm::tvec3<T>{glmmat4[1]},
+        glm::tvec3<T>{glmmat4[2]},
+    };
+    auto mymat = SmartLib::AxisSystem<T>::RotateMat(angle, raxis);
 
+    auto glmmat3str = glm::to_string(glmmat3);
+    auto mymatstr = glm::to_string(mymat);
+
+    for(int ii = 0; ii < 3; ++ ii)
+    {
+        qDebug() << glm::to_string(glmmat3[ii]).c_str();
+        qDebug() << glm::to_string(mymat[ii]).c_str();
+        auto bvec = glm::epsilonEqual(glmmat3[ii], mymat[ii], eps);
+        auto bvecstr = glm::to_string(bvec);
+        qDebug() << bvecstr.c_str();
+        assert(glm::all(bvec));
+    }
 }
 

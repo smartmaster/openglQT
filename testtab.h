@@ -19,6 +19,8 @@ private slots:
 
     void on_pushButtonTestAll_clicked();
 
+    void on_pushButton_test_rotmat_clicked();
+
 private:
     Ui::TestTab *ui;
 };

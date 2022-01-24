@@ -261,6 +261,8 @@ public:
     }
 
 
+
+
 public:
     //equivilent to glm::lookAt
     static glm::tmat4x4<T> LookAt(const glm::tvec3<T> &eye, const glm::tvec3<T> &center, const glm::tvec3<T> &up)
@@ -296,6 +298,9 @@ public:
 
     }
 
+
+
+
     static glm::tmat4x4<T> Frustum(
             T const &left, T const &right,
             T const &bottom, T const &top,
@@ -305,6 +310,42 @@ public:
         //////////////////////////////////////
         ///TO DO...
         assert(false);
+    }
+
+
+public:
+    static glm::tmat3x3<T> RotateMat(T radians, const glm::tvec3<T>& rotationAxis)
+    {
+        T cc = glm::cos(radians);
+        T ss = glm::sin(radians);
+        glm::tmat3x3<T> matRX
+        {
+            glm::tvec3<T>{1, 0, 0},     //colunm vector x axis
+            glm::tvec3<T>{0, cc, ss},   //colunm vector y axis
+            glm::tvec3<T>{0, -ss, cc}  //colunm vector z axis
+        };
+
+        static const glm::tvec3<T> vecx{1, 0, 0};
+
+        auto rz = glm::cross(vecx, rotationAxis);
+        if(glm::epsilonEqual(glm::length(rz), T{0}, glm::epsilon<T>()*1000))
+        {
+            static const  glm::tmat3x3<T> matE{1};
+            return matE;
+        }
+        auto ry = glm::cross(rz, rotationAxis);
+
+        glm::tmat3x3<T> matR
+        {
+            glm::normalize(rotationAxis),
+            glm::normalize(ry),
+            glm::normalize(rz),
+        };
+
+        glm::tmat3x3<T> matInv = glm::transpose(matR);
+
+
+        return matR * matRX * matInv;
     }
 };
 }
