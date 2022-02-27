@@ -308,8 +308,27 @@ public:
             )
     {
         //////////////////////////////////////
-        ///TO DO...
-        assert(false);
+
+        //frustum to cubic
+        T A = -zNear  - zFar;
+        T B = -zNear*zFar;
+        glm::tmat4x4<T> matFrustum2Cubic
+        {
+                  -zNear, 0, 0, 0,
+                  0, -zNear, 0, 0,
+                  0, 0, A, 1,
+                  0, 0, B, 0,
+        };
+
+        //cubic to NDC
+        glm::tmat4x4<T> matOrtho = Ortho(
+                    left, right,
+                    bottom, top,
+                    zNear, zFar);
+
+        glm::tmat4x4<T> rv = matOrtho * matFrustum2Cubic;
+
+        return -rv;
     }
 
 

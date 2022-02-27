@@ -533,3 +533,44 @@ void TestTab::on_pushButton_test_rotmat_clicked()
     }
 }
 
+
+void TestTab::on_btnTestFustum_clicked()
+{
+    using T = float;
+    float eps = glm::epsilon<float>()*1000;
+    std::vector<float> buffer(4096);
+    FillRandom(buffer.data(), (int)buffer.size());
+
+    int index = 0;
+    ////////////////////////////////////
+    {
+
+        auto m1 = SmartLib::AxisSystem<T>::Frustum(
+                    buffer[index+0],
+                buffer[index+1],
+                buffer[index+2],
+                buffer[index+3],
+                buffer[index+4],
+                buffer[index+5]);
+
+        auto m2 = glm::frustum(
+                    buffer[index+0],
+                buffer[index+1],
+                buffer[index+2],
+                buffer[index+3],
+                buffer[index+4],
+                buffer[index+5]);
+
+        index += 6;
+
+        for(int ii = 0; ii < 3; ++ ii)
+        {
+            auto iseq = glm::epsilonEqual(m1[ii], m2[ii], eps);
+            auto ok = glm::all(iseq);
+            assert(ok);
+        }
+
+
+    }
+}
+
